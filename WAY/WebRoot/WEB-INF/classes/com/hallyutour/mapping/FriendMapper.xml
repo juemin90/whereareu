@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hallyutour.dao.FriendMapper" >
+  <resultMap id ="FriendResultMap" type="com.hallyutour.model.Friend" >
+  	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="friendid" property="friendid" jdbcType="INTEGER" />
+    <result column="nickname" property="friendnickname" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_friend
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+	<!-- userid, friendid -->
+  <insert id="insertSelective" parameterType="com.hallyutour.model.Friend" >
+    insert into t_friend
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="friendid != null" >
+        friendid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="friendid != null" >
+        #{friendid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getAllByUserid" resultMap="FriendResultMap" parameterType="java.lang.String" >
+  	SELECT a.id,a.friendid, b.nickname FROM t_friend a join t_user b where a.friendid = b.userid and  a.userid =  #{userid,jdbcType=INTEGER}
+union
+SELECT a.id,a.userid, b.nickname FROM t_friend a join t_user b where a.userid = b.userid and  a.friendid =    #{userid,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getAllByNickname" resultMap="FriendResultMap" parameterType="map" >
+  	SELECT userid,nickname FROM t_user where nickname =  #{nickname,jdbcType=VARCHAR} and userid != #{userid,jdbcType=INTEGER} and userid not in
+  	(SELECT a.friendid FROM t_friend a join t_user b where a.friendid = b.userid and  a.userid =  #{userid,jdbcType=INTEGER}
+union
+SELECT a.userid FROM t_friend a join t_user b where a.userid = b.userid and  a.friendid =    #{userid,jdbcType=INTEGER})
+  </select>
+  
+</mapper>

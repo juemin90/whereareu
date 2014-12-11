@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hallyutour.dao.UserMapper" >
+  <resultMap id ="UserResultMap" type="com.hallyutour.model.User" >
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="imgpath" property="imgpath" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="User_Column_List" >
+    userid, username, password , email , nickname, imgpath
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="UserResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="User_Column_List" />
+    from t_user
+    where userid = #{userid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByUsernameAndPassword" resultMap="UserResultMap" parameterType="com.hallyutour.model.User" >
+    select 
+    <include refid="User_Column_List" />
+    from t_user
+    where username = #{username,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_user
+    where userid = #{userid,jdbcType=VARCHAR}
+  </delete>
+
+<!--  username, password , email , nickname, imgpath -->
+  <insert id="insertSelective" parameterType="com.hallyutour.model.User" >
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      
+      <if test="nickname != null" >
+        nickname,
+      </if>
+
+      <if test="imgpath != null" >
+        imgpath,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="imgpath != null" >
+        #{imgpath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hallyutour.model.User" >
+    update t_user
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="imgpath != null" >
+        imgpath = #{imgpath,jdbcType=VARCHAR},
+      </if>
+     
+    </set>
+    where userid = #{userid,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getAll" resultMap="UserResultMap">
+  	SELECT * FROM t_user
+  </select>
+   <select id="selectUserByUsername" resultMap="UserResultMap" parameterType="java.lang.String" >
+  	SELECT 
+	<include refid="User_Column_List" />
+	 FROM  t_user where username =  #{username,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="selectUserByNickname" resultMap="UserResultMap" parameterType="java.lang.String" >
+   	SELECT 
+	<include refid="User_Column_List" />
+	 FROM  t_user where nickname =  #{nickname,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

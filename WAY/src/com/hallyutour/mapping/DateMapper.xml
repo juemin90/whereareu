@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hallyutour.dao.DateMapper" >
+  <resultMap id ="FriendResultMap" type="com.hallyutour.model.Friend" >
+    <result column="friendid" property="friendid" jdbcType="INTEGER" />
+    <result column="nickname" property="friendnickname" jdbcType="VARCHAR" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id ="DateResultMap" type="com.hallyutour.model.Date" >
+  	<id column="dateid" property="dateid" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="meettime" property="meettime" jdbcType="VARCHAR" />
+    <result column="createuserid" property="createuserid" jdbcType="VARCHAR" />
+    <result column="withuserid" property="withuserid" jdbcType="VARCHAR" />
+    <result column="longitude" property="longitude" jdbcType="VARCHAR" />
+    <result column="latitude" property="latitude" jdbcType="VARCHAR" />
+    <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+    <result column="longone" property="longone" jdbcType="VARCHAR" />
+    <result column="latone" property="latone" jdbcType="VARCHAR" />
+    <result column="longtwo" property="longtwo" jdbcType="VARCHAR" />
+    <result column="lattwo" property="lattwo" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Date_Column_List" >
+    dateid,title,meettime,createuserid,withuserid,longitude,latitude,longone,latone,longtwo,lattwo
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="DateResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Date_Column_List" />
+    from t_date
+    where dateid = #{dateid,jdbcType=VARCHAR}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_date
+    where dateid = #{dateid,jdbcType=VARCHAR}
+  </delete>
+
+<!--  dateid,title,meettime,createuserid,withuserid,longitude,latitude longone,latone,longtwo,lattwo-->
+  <insert id="insertSelective" parameterType="com.hallyutour.model.Date" >
+    insert into t_date
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="meettime != null" >
+        meettime,
+      </if>
+      <if test="createuserid != null" >
+        createuserid,
+      </if>
+      
+      <if test="withuserid != null" >
+        withuserid,
+      </if>
+
+      <if test="longitude != null" >
+        longitude,
+      </if>
+      <if test="latitude != null" >
+        latitude,
+      </if>
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="meettime != null" >
+        #{meettime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="withuserid != null" >
+        #{withuserid,jdbcType=INTEGER},
+      </if>
+      <if test="longitude != null" >
+        #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        #{latitude,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hallyutour.model.Date" >
+    update t_date
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="meettime != null" >
+        meettime = #{meettime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuserid != null" >
+        createuserid = #{createuserid,jdbcType=INTEGER},
+      </if>
+      <if test="withuserid != null" >
+        withuserid = #{withuserid,jdbcType=INTEGER},
+      </if>
+      <if test="longitude != null" >
+        longitude = #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null" >
+        latitude = #{latitude,jdbcType=VARCHAR},
+      </if>
+      <if test="longone != null" >
+        longone = #{longone,jdbcType=VARCHAR},
+      </if>
+      <if test="latone != null" >
+        latone = #{latone,jdbcType=VARCHAR},
+      </if>
+      <if test="longtwo != null" >
+        longtwo = #{longtwo,jdbcType=VARCHAR},
+      </if>
+      <if test="lattwo != null" >
+        lattwo = #{lattwo,jdbcType=VARCHAR},
+      </if>  
+    </set>
+    where dateid = #{dateid,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="getAll" resultMap="DateResultMap" parameterType="java.lang.String">
+  	    select 
+    		a.dateid,a.title,a.meettime,a.createuserid,a.withuserid,a.longitude,a.latitude,b.nickname
+    from t_date a , t_user b
+    where a.withuserid = b.userid and a.createuserid = #{userid,jdbcType=VARCHAR} 
+    union
+	    select 
+    		a.dateid,a.title,a.meettime,a.createuserid,a.withuserid,a.longitude,a.latitude,b.nickname
+    from t_date a , t_user b
+    where a.createuserid= b.userid and withuserid= #{userid,jdbcType=VARCHAR}
+  </select>
+   <select id="getAllFriednByNickname" resultMap="FriendResultMap" parameterType="map" >
+   SELECT a.userid as userid ,a.nickname as nickname FROM t_user a, t_friend b where a.userid = b.friendid  and b.userid= #{userid,jdbcType=INTEGER} and nickname =  #{nickname,jdbcType=VARCHAR}
+union
+SELECT b.userid as userid ,a.nickname as nickname FROM t_user a, t_friend b where a.userid = b.userid  and b.friendid= #{userid,jdbcType=INTEGER} and nickname =  #{nickname,jdbcType=VARCHAR}
+
+  </select>
+</mapper>
